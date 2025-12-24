@@ -1,3 +1,9 @@
+"""Application entrypoint used for local development.
+
+Running this module starts a Uvicorn server that serves the
+FastAPI `app` defined in `api.py`.
+"""
+
 from api import app
 import uvicorn
 

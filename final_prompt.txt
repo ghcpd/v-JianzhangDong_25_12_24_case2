@@ -1,0 +1,104 @@
+Objective
+
+Create a reproducible, automated fix that finds and fills missing documentation (module/class/function/method docstrings), adds lightweight test/infra to verify the fixes, and ensures a clean reproducible environment to run those tests.
+
+Scope (do only these changes)
+- Add missing docstrings only. Do NOT modify existing code logic or behavior.
+- Add or update test(s) and small infra files required to verify docstrings (runner scripts, CI/workflow optional).
+- Create or recreate a clean virtual environment at `.venv/` and ensure `.venv/` is listed in `.gitignore`.
+- Produce a machine-readable record of all missing docs: `reference_link.txt` (see format below).
+
+Required tasks (must be automated)
+1) Environment
+   - If `.venv/` exists, delete it and create a new virtual environment at `.venv/`.
+   - Install dependencies from `requirements.txt` into `.venv/`.
+   - Update/create `.gitignore` so that `.venv/` and `logs/` are ignored.
+   - If installation fails due to native build/tooling (example: `pydantic-core` requiring Rust), detect the failure and exit with a clear remediation message.
+
+2) Discovery & record
+   - Scan the repository for missing module, class, function, and method docstrings.
+   - Write a `reference_link.txt` listing every missing docstring in this exact format:
+     (1) path/to/file.py: Missing module docstring (line 1)
+     (2) path/to/file.py: Missing class docstring for ClassName (line 12)
+     (3) path/to/file.py: Missing function docstring for func_name() (line 34)
+   - Save `reference_link.txt` at the repository root.
+
+3) Fixes (non-functional edits only)
+   - Add the missing docstrings identified above. Keep descriptions concise but informative (one-paragraph per docstring is fine).
+   - Do not change function/class signatures, behavior, or any logic.
+
+4) Verification infra
+   - Add cross-platform test runner scripts: `run_test.sh` (Linux/macOS) and `run_test.bat` (Windows).
+   - Add `auto_test.py` that:
+     - Detects environment (Windows vs POSIX vs Docker)
+     - Runs the appropriate test script
+     - Writes all output to `logs/test_run.log`
+     - Prepends the log with a timestamp and appends a final status line: `TEST PASSED` or `TEST FAILED`
+   - Add a test `tests/test_docstrings.py` that programmatically verifies that the previously missing docstrings are now present.
+
+Acceptance criteria (automated)
+- `reference_link.txt` exists and documents every originally missing docstring (file + type + line number).
+- Running `auto_test.py` inside the recreated `.venv/` produces `logs/test_run.log` containing:
+  - a timestamp at the top
+  - the full test output
+  - a final line equal to `TEST PASSED` (when tests pass) or `TEST FAILED` (when they fail)
+- `pytest` (or the chosen test runner) exits with code 0 when `TEST PASSED`.
+- No source logic changes were made — only docstrings, tests, and infra added.
+
+CLI commands (for human verification)
+- PowerShell (Windows):
+  Remove-Item -Recurse -Force .venv -ErrorAction SilentlyContinue
+  py -3.11 -m venv .venv
+  .\.venv\Scripts\python.exe -m pip install --upgrade pip
+  .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+  .\.venv\Scripts\python.exe auto_test.py
+
+- POSIX (Linux/macOS):
+  rm -rf .venv
+  python3 -m venv .venv
+  ./.venv/bin/python -m pip install --upgrade pip
+  ./.venv/bin/python -m pip install -r requirements.txt
+  ./.venv/bin/python auto_test.py
+
+Edge-cases & remediation (must be handled/communicated by the implementer)
+- If dependency installation fails due to missing native toolchains (example: Rust for `pydantic-core`), the installer must:
+  - Detect and report the exact failing package and error excerpt to `logs/test_run.log`.
+  - Exit with a non-zero code and a short remediation suggestion (install Rust or use a different Python version / pin the package).
+- If `.venv/` cannot be created, fail fast with clear instructions (check Python version, permissions).
+
+Notes for implementer (style + quality)
+- Docstrings: one concise paragraph + parameter/return summary only when the function is non-trivial.
+- Tests: deterministic and fast — only assert presence of docstrings and basic import safety.
+- Keep changes minimal and well-scoped; prefer adding files over modifying existing ones unless adding docstrings.
+
+Deliverables (files that must exist and be correct)
+- `reference_link.txt` (root)
+- Updated source files with added docstrings (no behavior changes)
+- `tests/test_docstrings.py`
+- `run_test.sh`, `run_test.bat`
+- `auto_test.py`
+- `.gitignore` (contains `.venv/` and `logs/`)
+- `logs/test_run.log` is created by `auto_test.py` when run
+
+Verification checklist (what I'll assert programmatically)
+- .venv/ was recreated (deleted then created)
+- `.gitignore` contains the `.venv/` entry
+- `reference_link.txt` lists X entries (where X matches the number of original missing docs)
+- `tests/test_docstrings.py` imports the package modules successfully
+- `auto_test.py` returns 0 and `logs/test_run.log` ends with `TEST PASSED`
+
+Implementation constraints
+- Do not change package logic or tests other than adding docstrings and the small infra described above.
+- Keep all changes small and focused; each changed source file should only gain docstrings (no refactors).
+
+Optional (recommended)
+- Add a GitHub Actions workflow that runs `auto_test.py` on push against a matrix of Python versions (3.11, 3.12, 3.14) and notes when native builds require Rust.
+
+---
+
+Example (reference_link.txt) format
+(1) core/utils.py: Missing module docstring (line 1)
+(2) services/payment.py: Missing function docstring for process_payment() (line 15)
+(3) models/user.py: Missing class docstring for UserProfile (line 3)
+
+End of prompt
