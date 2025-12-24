@@ -1,3 +1,9 @@
+"""Application entrypoint that starts the ASGI server.
+
+Run this module to launch the example FastAPI application locally
+using Uvicorn.
+"""
+
 from api import app
 import uvicorn
 
