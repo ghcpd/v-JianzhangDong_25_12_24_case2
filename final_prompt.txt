@@ -1,24 +1,56 @@
-You are responsible for finding missing docs.
+Role & Objective:
+You are an expert Prompt Engineer. Your task is to read the attached conversation log and, based solely on all blocks beginning with "User:", synthesize and generate a single English final prompt that can reproduce the original multi-turn results in a single interaction.
 
-Complete the following tasks:
-1. Based on the modified requirements.txt create a clean virtual environment under .venv/. Ensure that:
- - Do not reuse any existing environment. 
- - If .venv/ already exists, delete and recreate it.
- - Install all dependencies into .venv/.
- - Generate or update .gitignore so that .venv/ will not be uploaded to Git.
+Inputs & Context:
+- The conversation log is provided either as an attachment, pasted content, or a specified file path.
+- Only process blocks that begin with "User:" at the start of the line (ignoring leading whitespace).
+- Ignore all other blocks, including those from roles such as "GitHub Copilot:", "Assistant:", or "System:".
+- The scope of a User block extends from its role marker to the next role marker or end of file.
+- Ignore any User block that contains only process control, confirmation, or stop instructions (e.g., "@agent Continue", "Yes", "Stop").
+- If the first line of the document lacks a role marker, treat the first block as a User block.
+- In case of conflicting requirements, only the last occurrence is retained.
+- If only one valid User block remains after filtering, use its content verbatim (in the original language) as the final prompt.
 
-2. You must generate a reference_link.txt file documenting all missing docs.
-The file should follow the structure below:
-(1) core/utils.py: Missing module docstring (line 1)
-(2) services/payment.py: Missing function docstring for process_payment() (line 15)
-(3) models/user.py: Missing class docstring for UserProfile (line 3)
+Step-by-Step Instructions:
+1. Parse the conversation log into blocks, identifying and extracting only valid User blocks as defined above.
+2. Filter out all process control, confirmation, and stop instruction User blocks.
+3. If no valid User blocks remain, write 'ERROR: No valid user input found in the conversation log.' to final_prompt.txt and stop.
+4. If only one valid User block remains, write its content verbatim (in the original language) to final_prompt.txt and stop.
+5. Otherwise, synthesize all requirements, constraints, preferences, and examples from the remaining User blocks into a single, concise, and comprehensive English prompt.
+6. The final prompt must:
+   - Be executable in a single interaction
+   - Merge duplicate or overlapping requirements
+   - Use the last occurrence in case of conflicts
+   - Be structured as follows (omit sections if not applicable):
+     1. Role & Objective
+     2. Inputs & Context
+     3. Step-by-Step Instructions
+     4. Output Specification
+     5. Constraints & Preferences
+     6. Quality Gates
+   - Place the most critical compliance instruction at the end
+7. If requirements are ambiguous or insufficient, write 'ERROR: Insufficient or ambiguous requirements. Please provide more specific instructions.' to final_prompt.txt and stop.
+8. If irreconcilable conflicts are detected, write 'ERROR: Conflicting requirements detected: [describe conflict]' to final_prompt.txt and stop.
 
-3. Fill in all previously identified missing docs.
-   Do not modify existing code or logic—only add the missing documentation.
+Output Specification:
+- Write only the final English prompt to final_prompt.txt in UTF-8 encoding.
+- Do not output explanations, comments, or any additional content.
+- Do not create, read, or modify any files other than final_prompt.txt.
+- Default to the current working directory if no target directory is specified.
+- Use <PLACEHOLDER> for any environment-sensitive values.
+- Place the most critical compliance instruction at the end of the prompt.
 
-4. Implement an automatic test execution script named auto_test.py that:
-   - Detects the current environment (Windows/Linux/Docker)
-   - Runs the corresponding test script (run_test.sh for Linux/macOS, run_test.bat for Windows)
-   - Saves all output logs to logs/test_run.log
-   - The log must include a timestamp and a final status line: TEST PASSED or TEST FAILED
-   - These tests are intended to verify that all previously identified Missing docs (module, class, function docstrings) have been added.
+Constraints & Preferences:
+- The final prompt must be in English unless only one valid User block remains, in which case use the original language.
+- Do not ask clarifying questions; make the best reasonable inference from the available information.
+- Ignore all non-User blocks entirely.
+- Ensure the prompt is complete, unambiguous, and executable in a single turn.
+
+Quality Gates:
+- Confirm the prompt is single-turn, self-contained, and does not require further interaction.
+- Ensure all requirements are derived strictly from valid User blocks.
+- Verify that the structure and content are clear, actionable, and free of ambiguity.
+- If the task involves output validation, include explicit self-check steps.
+
+Final Instruction:
+Only write the generated final prompt to final_prompt.txt; do not create, read, or modify any other files.
