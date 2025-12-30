@@ -1,3 +1,6 @@
+"""
+应用程序入口模块
+"""
 from api import app
 import uvicorn
 
