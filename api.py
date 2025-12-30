@@ -1,3 +1,4 @@
+"""API module exposing FastAPI endpoints for task management."""
 from fastapi import FastAPI
 from tasks import Task, TaskManager
 
@@ -13,9 +14,11 @@ def get_tasks():
 
 @app.post("/tasks")
 def create_task(title: str, description: str):
+    """Create a new task with title and description and add it to the task manager."""
     task = Task(title, description)
     manager.add_task(task)
     return {"message": "Task added successfully"}
 
 def internal_helper():
+    """Internal helper returning a fixed message."""
     return "This is internal"

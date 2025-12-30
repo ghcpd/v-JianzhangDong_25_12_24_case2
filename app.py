@@ -1,3 +1,4 @@
+"""Application entrypoint for running the FastAPI app with Uvicorn."""
 from api import app
 import uvicorn
 
