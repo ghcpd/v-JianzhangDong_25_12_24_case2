@@ -1,3 +1,4 @@
+"""Main application entry point."""
 from api import app
 import uvicorn
 

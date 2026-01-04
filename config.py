@@ -1,3 +1,4 @@
+"""Configuration file for application settings."""
 # 配置文件
 
 DEFAULT_TASK_STATUS = "pending"
