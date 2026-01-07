@@ -1,0 +1,18 @@
+(1) api.py: Missing module docstring (line 1)
+(2) api.py: Missing function docstring for create_task() (line 15)
+(3) api.py: Missing function docstring for internal_helper() (line 20)
+(4) app.py: Missing module docstring (line 1)
+(5) config.py: Missing module docstring (line 1)
+(6) tasks.py: Missing module docstring (line 1)
+(7) tasks.py: Missing class docstring for TaskManager (line 15)
+(8) tasks.py: Missing method docstring for Task.mark_done (line 12)
+(9) tasks.py: Missing method docstring for TaskManager.__init__ (line 16)
+(10) tasks.py: Missing method docstring for TaskManager.add_task (line 19)
+(11) tasks.py: Missing method docstring for TaskManager.list_tasks (line 22)
+(12) tasks.py: Missing method docstring for TaskManager.remove_task (line 25)
+(13) utils.py: Missing module docstring (line 1)
+(14) utils.py: Missing function docstring for validate_task_title (line 1)
+(15) utils.py: Missing function docstring for helper_function (line 6)
+
+# Notes
+- The entries above list what was missing before this change. The repository files have been updated to include the corresponding docstrings.
